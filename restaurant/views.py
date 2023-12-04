@@ -1,13 +1,23 @@
 # from django.http import HttpResponse
-from django.shortcuts import render
-from .forms import BookingForm
+from django.shortcuts import render, redirect
+from .forms import BookingForm, LoginForm
 from LittlelemonAPI.models import MenuItem, Booking
 from django.core import serializers
 from datetime import datetime
 import json
-from django.views.decorators.csrf import csrf_exempt
+import requests
 from django.http import HttpResponse
+from rest_framework.authtoken.models import Token
 
+def isauth(request):
+    tok = request.COOKIES.get('token', None)
+    if tok is not None:
+        if Token.objects.get(key=tok):
+            return True
+        else:
+            return False
+    else:
+        return False
 
 # Create your views here.
 def home(request):
@@ -17,7 +27,8 @@ def about(request):
     return render(request, 'about.html')
 
 def reservations(request):
-    date = request.GET.get('date',datetime.today().date())
+    if not isauth(request):
+        return HttpResponse("You must login or register")
     bookings = Booking.objects.all()
     booking_json = serializers.serialize('json', bookings)
     json_object = json.loads(booking_json)
@@ -26,7 +37,22 @@ def reservations(request):
         bookings_list.append(booking)
     return render(request, 'bookings.html',{"bookings":bookings_list})
 
+def login(request):
+    form = LoginForm()
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            response = requests.post("http://127.0.0.1:8000/auth/token/login", data=form.data)
+            res = HttpResponse()
+            res = redirect('http://127.0.0.1:8000/')
+            res.set_cookie('token', response.json()["auth_token"])
+            return res
+    context = {'form':form}
+    return render(request, 'login.html', context)
+
 def book(request):
+    if not isauth(request):
+        return HttpResponse("You must login or register")
     form = BookingForm()
     if request.method == 'POST':
         form = BookingForm(request.POST)
@@ -49,8 +75,10 @@ def display_menu_item(request, pk=None):
         menu_item = "" 
     return render(request, 'menu_item.html', {"menu_item": menu_item}) 
 
-# @csrf_exempt
+
 def bookings(request):
+    if not isauth(request):
+        return HttpResponse("You must login or register")
     date = request.GET.get('date',datetime.today().date())
     # formatted_date = date.strftime('%Y-%m-%d') 
     json_param = request.GET.get('date', date)

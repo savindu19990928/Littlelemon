@@ -8,6 +8,7 @@ django = "*"
 pymysql = "*"
 djangorestframework = "*"
 djoser = "*"
+requests = "*"
 
 [dev-packages]
 

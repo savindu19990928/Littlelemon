@@ -11,3 +11,7 @@ class BookingForm(forms.ModelForm):
         widgets = {
             'reservation_date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='Username', max_length=25)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)

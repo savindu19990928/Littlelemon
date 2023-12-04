@@ -7,7 +7,13 @@
     <li><a href="{% url 'home' %}">Home</a></li>
     <li><a href="{% url 'about' %}">About</a></li>
     <li><a href="{% url 'menu' %}">Menu</a></li>
+    {% if request.COOKIES.token %}
     <li><a href="{% url 'book' %}">Book</a></li>
     <li><a href="{% url 'reservations' %}">Reservations</a></li>
+    {% endif %}
+    {% if not request.COOKIES.token %}
+    <li><a href="{% url 'loginuser' %}">Login</a></li>
+    <li><a href="{% url 'loginuser' %}">Register</a></li>
+    {% endif %}
   </ul>
 </nav>
