@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import MenuItem, Category, Order, Booking
+from .models import MenuItem, Category, Booking
 from .serializers import MenuItemSerializer, CategorySerializer, OrderSerializer, UserSerilializer, BookingSerializer
 from rest_framework.response import Response
 
@@ -135,16 +135,16 @@ class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):
     #     return total
 
 
-class SingleOrderView(generics.RetrieveUpdateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+# class SingleOrderView(generics.RetrieveUpdateAPIView):
+#     queryset = Order.objects.all()
+#     serializer_class = OrderSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def update(self, request, *args, **kwargs):
-        if self.request.user.groups.count()==0: # Normal user, not belonging to any group = Customer
-            return Response('Not Ok')
-        else: #everyone else - Super Admin, Manager and Delivery Crew
-            return super().update(request, *args, **kwargs)
+#     def update(self, request, *args, **kwargs):
+#         if self.request.user.groups.count()==0: # Normal user, not belonging to any group = Customer
+#             return Response('Not Ok')
+#         else: #everyone else - Super Admin, Manager and Delivery Crew
+#             return super().update(request, *args, **kwargs)
 
 
 
