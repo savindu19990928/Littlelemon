@@ -11,4 +11,6 @@ urlpatterns = [
     path('reservations/', views.reservations, name="reservations"),
     path('bookings/', views.bookings, name="bookings"),
     path('loginuser/', views.login, name="loginuser"),
+    path('registeruser/', views.register, name="registeruser"),
+    path('logoutuser/', views.logout, name="logoutuser"),
 ]

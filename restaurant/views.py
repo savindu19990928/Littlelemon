@@ -50,6 +50,30 @@ def login(request):
     context = {'form':form}
     return render(request, 'login.html', context)
 
+def logout(request):
+    tok = request.COOKIES.get('token', None)
+    if tok is not None:
+        headers = {'Authorization': f'token {tok}',}
+        requests.post("http://127.0.0.1:8000/auth/token/logout", headers=headers)
+        res = HttpResponse()
+        res = redirect('http://127.0.0.1:8000/')
+        res.delete_cookie('token')
+        return res
+
+
+
+def register(request):
+    form = LoginForm()
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            requests.post("http://127.0.0.1:8000/api/register", data=form.data)
+            res = HttpResponse()
+            res = redirect('http://127.0.0.1:8000/registeruser')
+            return res
+    context = {'form':form}
+    return render(request, 'login.html', context)
+
 def book(request):
     if not isauth(request):
         return HttpResponse("You must login or register")
